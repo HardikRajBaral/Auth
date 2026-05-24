@@ -1,5 +1,5 @@
 import nodemailer from "nodemailer"
-import { buildAuthEmailTemplate } from "./emailTemplate.js"
+import { buildAuthEmailTemplate } from "./emailTemplate"
 
 
 export const transporter = nodemailer.createTransport({
