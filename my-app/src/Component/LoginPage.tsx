@@ -1,6 +1,6 @@
 import { useState } from "react"
-import { useNavigate } from 'react-router-dom'
-import "../assets/css/loginCss.css"
+import { Link, useNavigate } from 'react-router-dom'
+import AuthLayout from './AuthLayout'
 const LogIn=()=>{
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -21,7 +21,7 @@ const LogIn=()=>{
         },
         body:JSON.stringify({email,password})
       })
-      const data:any= await res.json()
+      const data= await res.json()
       if(!res.ok){
         setErrors({ api: data.message ?? "Invalid email or password." });
         throw new Error('Login failed')
@@ -44,36 +44,68 @@ const LogIn=()=>{
   }
 
   return (
-    <>  
-    <form className="Login-Card" onSubmit={handleSubmit}>
-          <h1>Welcome Back</h1>
-          <p>Sign in to your account</p>
-        <div>
-          <label>Email</label>
-          <input type="email" 
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          />
-          {errors.email && <span className="error">{errors.email}</span>}
-        </div>
-        
-        <div>
-          <label>Password</label>
-          <input type={show?"text":"password"} 
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          />
-          <button onClick={()=>{setShow(!show)}}>{show?"hide":"show"}</button>
-          {errors.password && <span className="error">{errors.password}</span>}
-        </div>
-        {errors.api && <div className="error api-error">{errors.api}</div>}
+    <AuthLayout
+      eyebrow="Member access"
+      title="Welcome back"
+      description="Sign in to keep working from where you left off. The flow stays simple and the screen stays quiet."
+      points={[
+        { title: 'Clean handoff', text: 'Log in and jump straight back into the app without extra noise.' },
+        { title: 'Account safety', text: 'Password visibility is tucked away instead of floating in the way.' },
+        { title: 'Fast recovery', text: 'Use the reset flow if you cannot get into your account.' },
+      ]}
+    >
+      <div className="auth-card-head">
+        <div className="auth-kicker">Sign in</div>
+        <h2>Use your email and password</h2>
+        <p>We kept this compact on purpose. It should feel like a normal app, not a landing page.</p>
+      </div>
 
-        <button disabled={loading} type='submit'>{loading ? 'Loging in...' : 'LogIn'}</button>
-        <span>Create Account? <a href="/signup">Register</a></span><br/>
-        <span><a href="/forget-password">Forgot password?</a></span>
+      <form className="auth-form" onSubmit={handleSubmit} noValidate>
+        <label className="field">
+          <span>Email</span>
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="you@example.com"
+            autoComplete="email"
+          />
+          {errors.email && <span className="field-error">{errors.email}</span>}
+        </label>
 
-    </form>
-    </>
+        <label className="field">
+          <span>Password</span>
+          <div className="input-shell">
+            <input
+              type={show ? 'text' : 'password'}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Enter your password"
+              autoComplete="current-password"
+            />
+            <button className="toggle-button" type="button" onClick={() => setShow(!show)}>
+              {show ? 'Hide' : 'Show'}
+            </button>
+          </div>
+          {errors.password && <span className="field-error">{errors.password}</span>}
+        </label>
+
+        {errors.api && <div className="error-banner">{errors.api}</div>}
+
+        <button disabled={loading} className="primary-button" type="submit">
+          {loading ? 'Signing in...' : 'Sign in'}
+        </button>
+      </form>
+
+      <div className="auth-footer">
+        <span>
+          New here? <Link to="/signup">Create account</Link>
+        </span>
+        <Link className="inline-link" to="/forget-password">
+          Forgot password?
+        </Link>
+      </div>
+    </AuthLayout>
   )
 }
 
